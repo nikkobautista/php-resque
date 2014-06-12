@@ -50,6 +50,11 @@ class Resque_Worker
 	private $child = null;
 
 	/**
+	 * @var int number of times this has been idle based on interval
+	 */
+	private $idle_count = 0;
+
+	/**
 	 * Return all workers known to Resque as instantiated instances.
 	 * @return array
 	 */
@@ -141,9 +146,11 @@ class Resque_Worker
 	 *
 	 * Queues are checked every $interval (seconds) for new jobs.
 	 *
-	 * @param int $interval How often to check for new jobs across the queues.
+	 * @param int     $interval How often to check for new jobs across the queues.
+	 * @param boolean $blocking Does this worker block other workers from popping of the same queue?
+	 * @param integer $idle_max The maximum number of idle counts, based on the interval, this worker should have before dying
 	 */
-	public function work($interval = Resque::DEFAULT_INTERVAL, $blocking = false)
+	public function work($interval = Resque::DEFAULT_INTERVAL, $blocking = false, $idle_max = Resque::DEFAULT_IDLE_MAX)
 	{
 		$this->updateProcLine('Starting');
 		$this->startup();
@@ -186,9 +193,17 @@ class Resque_Worker
 					usleep($interval * 1000000);
 				}
 
+				$this->idle_count++;
+
+				if ($this->idle_count >= $idle_max) {
+					$this->logger->log(Psr\Log\LogLevel::INFO, 'Killing since max idle count has been reached (Max: {idle_max}', array('idle_max' => $idle_max));
+					break;
+				}
+
 				continue;
 			}
 
+			$this->idle_count = 0;
 			$this->logger->log(Psr\Log\LogLevel::NOTICE, 'Starting work on {job}', array('job' => $job));
 			Resque_Event::trigger('beforeFork', $job);
 			$this->workingOn($job);

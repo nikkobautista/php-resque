@@ -12,6 +12,8 @@ class Resque
 
     const DEFAULT_INTERVAL = 5;
 
+    const DEFAULT_IDLE_MAX = 120;
+
 	/**
 	 * @var Resque_Redis Instance of Resque_Redis that talks to redis.
 	 */
@@ -62,7 +64,7 @@ class Resque
 		self::$redis = new Resque_Redis($server, self::$redisDatabase);
 		return self::$redis;
 	}
-	
+
 	/**
 	 * fork() helper method for php-resque that handles issues PHP socket
 	 * and phpredis have with passing around sockets between child/parent

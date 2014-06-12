@@ -79,6 +79,12 @@ if(!empty($COUNT) && $COUNT > 1) {
     $count = $COUNT;
 }
 
+$idle_max = 1;
+$IDLE_MAX = getenv('IDLE_MAX');
+if(!empty($IDLE_MAX) && $IDLE_MAX > 1) {
+    $idle_max = $IDLE_MAX;
+}
+
 $PREFIX = getenv('PREFIX');
 if(!empty($PREFIX)) {
     $logger->log(Psr\Log\LogLevel::INFO, 'Prefix set to {prefix}', array('prefix' => $PREFIX));
@@ -116,6 +122,6 @@ else {
     }
 
     $logger->log(Psr\Log\LogLevel::NOTICE, 'Starting worker {worker}', array('worker' => $worker));
-    $worker->work($interval, $BLOCKING);
+    $worker->work($interval, $BLOCKING, $idle_max);
 }
 ?>
