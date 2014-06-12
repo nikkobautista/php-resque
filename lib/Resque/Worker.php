@@ -196,8 +196,13 @@ class Resque_Worker
 				$this->idle_count++;
 
 				if ($this->idle_count >= $idle_max) {
-					$this->logger->log(Psr\Log\LogLevel::INFO, 'Killing since max idle count has been reached (Max: {idle_max}', array('idle_max' => $idle_max));
+					$this->logger->log(Psr\Log\LogLevel::NOTICE, 'Killing since max idle count has been reached (Max: {idle_max})', array('idle_max' => $idle_max));
 					break;
+				} else {
+					$this->logger->log(Psr\Log\LogLevel::NOTICE, 'Current Idle Count is at {idle_count} (Max: {idle_max})', array(
+						'idle_count' => $this->idle_count,
+						'idle_max' => $idle_max
+					));
 				}
 
 				continue;
