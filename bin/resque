@@ -79,7 +79,7 @@ if(!empty($COUNT) && $COUNT > 1) {
     $count = $COUNT;
 }
 
-$idle_max = 1;
+$idle_max = \Resque::DEFAULT_IDLE_MAX;
 $IDLE_MAX = getenv('IDLE_MAX');
 if(!empty($IDLE_MAX) && $IDLE_MAX > 1) {
     $idle_max = $IDLE_MAX;
