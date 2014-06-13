@@ -379,7 +379,9 @@ class Resque_Worker
 	public function shutdown()
 	{
 		$this->shutdown = true;
-		$this->logger->log(Psr\Log\LogLevel::NOTICE, "Shutdown received at " . date('Y-m-d H:i:s') . " for Worker: {$this->id}");
+		$ids = explode(':', $this->id);
+		$pid = (!empty($ids[1])) ? $ids[1] : 'unknown';
+		$this->logger->log(Psr\Log\LogLevel::NOTICE, "Shutdown received at " . date('Y-m-d H:i:s') . " for {$this->id} (PID: {$pid})");
 	}
 
 	/**
