@@ -190,7 +190,13 @@ class Resque_Worker
 						$this->updateProcLine('Waiting for ' . implode(',', $this->queues));
 					}
 
-					usleep($interval * 1000000);
+					$time_to_end = time() + $interval;
+
+					while (time() < $time_to_end) {
+						if($this->shutdown) {
+							break 2;
+						}
+					}
 				}
 
 				$this->idle_count++;
